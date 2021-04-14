@@ -1,65 +1,7 @@
-//這裡是樣式的js
-document.addEventListener('DOMContentLoaded', function () {
-  const ele = document.querySelector('.recommendation-wall');
-  ele.style.cursor = 'grab';
-  let pos = { top: 0, left: 0, x: 0, y: 0 };
-  const mouseDownHandler = function (e) {
-    ele.style.cursor = 'grabbing';
-    ele.style.userSelect = 'none';
-    pos = {
-      left: ele.scrollLeft,
-      top: ele.scrollTop,
-      // Get the current mouse position
-      x: e.clientX,
-      y: e.clientY,
-    };
-    document.addEventListener('mousemove', mouseMoveHandler);
-    document.addEventListener('mouseup', mouseUpHandler);
-  };
-  const mouseMoveHandler = function (e) {
-    // How far the mouse has been moved
-    const dx = e.clientX - pos.x;
-    const dy = e.clientY - pos.y;
-
-    // Scroll the element
-    ele.scrollTop = pos.top - dy;
-    ele.scrollLeft = pos.left - dx;
-  };
-  const mouseUpHandler = function () {
-    ele.style.cursor = 'grab';
-    ele.style.removeProperty('user-select');
-
-    document.removeEventListener('mousemove', mouseMoveHandler);
-    document.removeEventListener('mouseup', mouseUpHandler);
-  };
-  // Attach the handler
-  ele.addEventListener('mousedown', mouseDownHandler);
-});
-// menu 切換
-const menuOpenBtn = document.querySelector('.menuToggle');
-const linkBtn = document.querySelectorAll('.topBar-menu a');
-const menu = document.querySelector('.topBar-menu');
-menuOpenBtn.addEventListener('click', menuToggle);
-
-linkBtn.forEach((item) => {
-  item.addEventListener('click', closeMenu);
-});
-
-function menuToggle() {
-  if (menu.classList.contains('openMenu')) {
-    menu.classList.remove('openMenu');
-  } else {
-    menu.classList.add('openMenu');
-  }
-}
-function closeMenu() {
-  menu.classList.remove('openMenu');
-}
-
 //開始寫資料呈現的部分
 const domProductList = document.querySelector('.productWrap');
-const domCartList = document.querySelector('.shoppingCart-table');
-// const domDeleteAllBtn = document.querySelector('.discardAllBtn');
+const domCartList = document.querySelector('.shoppingCart-table tbody');
+const domProductSelect = document.querySelector('.productSelect');
 const apiPath = `jordanttcdesign`;
 const apiUrl = ``;
 let sendCheck = false;
@@ -75,9 +17,9 @@ function dataInit() {
     .then(function (response) {
       // console.log(response);
       data = response.data.products;
-      // console.log(data);
+      console.log(data);
       getCartData();
-      renderProductList();
+      renderProductList(data);
     })
     .catch(function (response) {
       console.log(response);
@@ -106,13 +48,28 @@ domCartList.addEventListener('click', function (e) {
     return;
   }
 });
+domProductSelect.addEventListener('change', function (e) {
+  let selectValue = e.target.value;
+  let selectList = [];
+  if (selectValue == '全部') {
+    selectList = data;
+    console.log(selectValue);
+  } else {
+    data.forEach(function (item) {
+      if (selectValue == item.category) {
+        selectList.push(item);
+      }
+    });
+  }
+  renderProductList(selectList);
+});
 
 //function區域
 
 //渲染產品卡片
-function renderProductList() {
+function renderProductList(productRenderArray) {
   let str = ``;
-  data.forEach(function (item) {
+  productRenderArray.forEach(function (item) {
     str += `<li class="productCard">
     <h4 class="productType">新品</h4>
     <img
@@ -146,13 +103,7 @@ function getCartData() {
 //渲染購物車樣式
 function renderCartList() {
   let total = 0;
-  let str = `<tr>
-  <th width="40%">品項</th>
-  <th width="15%">單價</th>
-  <th width="15%">數量</th>
-  <th width="15%">金額</th>
-  <th width="15%"></th>
-</tr>`;
+  let str = ``;
   cartData.forEach(function (item) {
     let productPrice = item.quantity * item.product.price;
     str += `<tr>

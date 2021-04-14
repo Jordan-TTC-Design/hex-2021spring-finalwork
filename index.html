@@ -9,7 +9,7 @@
       rel="stylesheet"
     />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
-    <link rel="stylesheet" href="all.css" />
+    <link rel="stylesheet" href="/css/all.css" />
     <title>HexShop</title>
   </head>
   <body>
@@ -295,7 +295,7 @@
         <option value="窗簾">窗簾</option>
       </select>
       <ul class="productWrap">
-        <li class="productCard">
+        <!-- <li class="productCard">
           <h4 class="productType">新品</h4>
           <img
             src="https://hexschool-api.s3.us-west-2.amazonaws.com/custom/dp6gW6u5hkUxxCuNi8RjbfgufygamNzdVHWb15lHZTxqZQs0gdDunQBS7F6M3MdegcQmKfLLoxHGgV3kYunUF37DNn6coPH6NqzZwRfhbsmEblpJQLqXLg4yCqUwP3IE.png"
@@ -382,13 +382,14 @@
           <h3>Antony 雙人床架／雙人加大</h3>
           <del class="originPrice">NT$18,000</del>
           <p class="nowPrice">NT$12,000</p>
-        </li>
+        </li> -->
       </ul>
     </section>
     <section class="shoppingCart">
       <h3 class="section-title">我的購物車</h3>
       <div class="overflowWrap">
         <table class="shoppingCart-table">
+          <thead>
           <tr>
             <th width="40%">品項</th>
             <th width="15%">單價</th>
@@ -396,6 +397,8 @@
             <th width="15%">金額</th>
             <th width="15%"></th>
           </tr>
+        </thead>
+        <tbody>
           <!-- <tr>
             <td>
               <div class="cardItem-title">
@@ -421,6 +424,7 @@
             </td>
             <td>NT$13,980</td>
           </tr>
+        </tbody>
         </table>
       </div>
     </section>
@@ -501,8 +505,9 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/validate.js/0.13.1/validate.min.js"></script>
     <!-- axios -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
-
+    <!-- 別人寫的js -->
+    <script src="js/shopDefault.js"></script>
     <!-- 我的js -->
-    <script src="./shop.js"></script>
+    <script src="js/shop.js"></script>
   </body>
 </html>

@@ -3,20 +3,18 @@ const myToken = `Czca4lCbdIOGfTUFicQIcpX03ca2`;
 const apiPath = `jordanttcdesign`;
 const domOrderList = document.querySelector('.orderPage-table tbody');
 const domDeleteAllBtn = document.querySelector('.discardAllBtn');
+const apiUrl = `https://hexschoollivejs.herokuapp.com/api/livejs/v1`;
 let orderData; //全部的訂單資料
 
 //預設最開始的動作
 adminInit();
 function adminInit() {
   axios
-    .get(
-      `https://hexschoollivejs.herokuapp.com/api/livejs/v1/admin/${apiPath}/orders`,
-      {
-        headers: {
-          authorization: myToken,
-        },
-      }
-    )
+    .get(`${apiUrl}/admin/${apiPath}/orders`, {
+      headers: {
+        authorization: myToken,
+      },
+    })
     .then(function (response) {
       // console.log(response);
       orderData = response.data.orders;
@@ -101,17 +99,17 @@ function adminGetOrderData() {
 //這裡跟前台不同，前台只需更新購物車，這裡要更新兩項，所以直接執行adminInit()，畫面更新。
 function adminDeleteOrder(orderId) {
   axios
-    .delete(
-      `https://hexschoollivejs.herokuapp.com/api/livejs/v1/admin/${apiPath}/orders/${orderId}`,
-      {
-        headers: {
-          authorization: myToken,
-        },
-      }
-    )
+    .delete(`${apiUrl}/admin/${apiPath}/orders/${orderId}`, {
+      headers: {
+        authorization: myToken,
+      },
+    })
     .then(function (response) {
       console.log(response);
-      adminInit(); //更新畫面與資料
+      orderData = response.data.orders;
+      // console.log(orderData);
+      adminGetOrderData(); //渲染畫面訂單
+      getC3Data(orderData); //渲染畫面c3圖表
     })
     .catch(function (error) {
       console.log(error);
@@ -121,17 +119,17 @@ function adminDeleteOrder(orderId) {
 //這裡跟前台不同，前台只需更新購物車，這裡要更新兩項，所以直接執行adminInit()，畫面更新。
 function adminDeleteOrderAll() {
   axios
-    .delete(
-      `https://hexschoollivejs.herokuapp.com/api/livejs/v1/admin/${apiPath}/orders`,
-      {
-        headers: {
-          authorization: myToken,
-        },
-      }
-    )
+    .delete(`${apiUrl}/admin/${apiPath}/orders`, {
+      headers: {
+        authorization: myToken,
+      },
+    })
     .then(function (response) {
       console.log(response);
-      adminInit(); //更新畫面與資料
+      orderData = response.data.orders;
+      // console.log(orderData);
+      adminGetOrderData(); //渲染畫面訂單
+      getC3Data(orderData); //渲染畫面c3圖表
     })
     .catch(function (error) {
       console.log(error);
@@ -145,7 +143,7 @@ function adminChangeOrderStatus(orderId, nowStatus) {
   console.log(changeStatus);
   axios
     .put(
-      `https://hexschoollivejs.herokuapp.com/api/livejs/v1/admin/${apiPath}/orders`,
+      `${apiUrl}/admin/${apiPath}/orders`,
       {
         data: {
           id: orderId,
@@ -160,7 +158,8 @@ function adminChangeOrderStatus(orderId, nowStatus) {
     )
     .then(function (response) {
       console.log(response);
-      adminInit();
+      orderData = response.data.orders;
+      adminGetOrderData(); //渲染畫面訂單
     })
     .catch(function (error) {
       console.log(error);
@@ -219,24 +218,31 @@ function processC3Top3Data(data) {
     itemArray.push(item.revenue);
     newC3Data.push(itemArray);
   });
-  //產生圖表的顏色陣列
-  colorData = {};
-  colorData[newC3Data[0][0]] = '#DACBFF';
-  colorData[newC3Data[1][0]] = '#9D7FEA';
-  colorData[newC3Data[2][0]] = '#5434A7';
-  colorData['其他'] = '#301E5F';
-  c3Render(newC3Data, colorData);
+  // //產生圖表的顏色陣列
+  // colorData = {};
+  // console.log(newC3Data);
+  // if (newC3Data.length > 0) {
+  //   colorData[newC3Data[0][0]] = '#DACBFF';
+  //   colorData[newC3Data[1][0]] = '#9D7FEA';
+  //   colorData[newC3Data[2][0]] = '#5434A7';
+  //   colorData['其他'] = '#301E5F';
+  // }
+  // c3Render(newC3Data, colorData);
+  c3Render(newC3Data);
   console.log(newC3Data);
 }
 //渲染c3圖表畫面
-function c3Render(data, colorData) {
+function c3Render(data) {
   // console.log(colorData);
   let chart = c3.generate({
     bindto: '#chart', // HTML 元素綁定
     data: {
       type: 'pie',
       columns: data,
-      colors: colorData,
+      // colors: colorData,
+    },
+    color: {
+      pattern: ['#DACBFF', '#9D7FEA', '#5434A7', '#301E5F'],
     },
   });
 }

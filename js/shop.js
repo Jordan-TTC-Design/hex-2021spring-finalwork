@@ -3,7 +3,7 @@ const domProductList = document.querySelector('.productWrap');
 const domCartList = document.querySelector('.shoppingCart-table tbody');
 const domProductSelect = document.querySelector('.productSelect');
 const apiPath = `jordanttcdesign`;
-const apiUrl = ``;
+const apiUrl = `https://hexschoollivejs.herokuapp.com/api/livejs/v1`;
 let sendCheck = false;
 let data; //產品資料陣列
 let cartData; //購物車資料陣列
@@ -11,9 +11,7 @@ let cartData; //購物車資料陣列
 dataInit();
 function dataInit() {
   axios
-    .get(
-      `https://hexschoollivejs.herokuapp.com/api/livejs/v1/customer/${apiPath}/products`
-    )
+    .get(`${apiUrl}/customer/${apiPath}/products`)
     .then(function (response) {
       // console.log(response);
       data = response.data.products;
@@ -87,9 +85,7 @@ function renderProductList(productRenderArray) {
 //取得購物車資料
 function getCartData() {
   axios
-    .get(
-      `https://hexschoollivejs.herokuapp.com/api/livejs/v1/customer/${apiPath}/carts`
-    )
+    .get(`${apiUrl}/customer/${apiPath}/carts`)
     .then(function (response) {
       // console.log(response);
       cartData = response.data.carts;
@@ -159,16 +155,14 @@ function processAddCartData(productId) {
 //2.推到資料庫->AddCart(data)
 function AddCart(data) {
   axios
-    .post(
-      `https://hexschoollivejs.herokuapp.com/api/livejs/v1/customer/${apiPath}/carts`,
-      {
-        data,
-      }
-    )
+    .post(`${apiUrl}/customer/${apiPath}/carts`, {
+      data,
+    })
     .then(function (response) {
       console.log(response);
+      cartData = response.data.carts;
       //重新更新購物車資料
-      getCartData();
+      renderCartList();
     })
     .catch(function (response) {
       console.log(response);
@@ -177,12 +171,11 @@ function AddCart(data) {
 //刪除購物車特定品項，直接帶入品項編號即可
 function deleteCart(cartId) {
   axios
-    .delete(
-      `https://hexschoollivejs.herokuapp.com/api/livejs/v1/customer/${apiPath}/carts/${cartId}`
-    )
+    .delete(`${apiUrl}/customer/${apiPath}/carts/${cartId}`)
     .then(function (response) {
       //更新購物車資料
-      getCartData();
+      cartData = response.data.carts;
+      renderCartList();
     })
     .catch(function (response) {
       console.log(response);
@@ -192,9 +185,7 @@ function deleteCart(cartId) {
 //刪除全部購物車，直接執行即可
 function deleteCartAll() {
   axios
-    .delete(
-      `https://hexschoollivejs.herokuapp.com/api/livejs/v1/customer/${apiPath}/carts`
-    )
+    .delete(`${apiUrl}/customer/${apiPath}/carts`)
     .then(function (response) {
       console.log(response);
       //重新更新購物車資料
@@ -256,14 +247,18 @@ domInputTxtList.forEach(function (item) {
 //監聽送出預定資料資料是否填寫
 domOrderInfoBtn.addEventListener('click', function (e) {
   e.preventDefault();
-  //想要減少執行監聽次數多一個if判斷式放在前面sendCheck，如果是true直接不檢查了。
-  if (sendCheck == true) {
-    console.log(`我想要送出`);
-    processOrderInfo();
+  if (cartData.length > 0) {
+    //想要減少執行監聽次數多一個if判斷式放在前面sendCheck，如果是true直接不檢查了。
+    if (sendCheck == true) {
+      console.log(`我想要送出`);
+      processOrderInfo();
+    } else {
+      domInputTxtList.forEach(function (item) {
+        renderOrderInfoCheck(item);
+      });
+    }
   } else {
-    domInputTxtList.forEach(function (item) {
-      renderOrderInfoCheck(item);
-    });
+    alert('購物車沒東西！');
   }
 });
 //顯示沒有填寫的資訊
@@ -295,20 +290,17 @@ function processOrderInfo() {
 function sendOrderInfo(obj) {
   console.log(obj);
   axios
-    .post(
-      `https://hexschoollivejs.herokuapp.com/api/livejs/v1/customer/${apiPath}/orders`,
-      {
-        data: {
-          user: {
-            name: obj.customerName,
-            tel: obj.customerPhone,
-            email: obj.customerEmail,
-            address: obj.customerAddress,
-            payment: obj.tradeWay,
-          },
+    .post(`${apiUrl}/customer/${apiPath}/orders`, {
+      data: {
+        user: {
+          name: obj.customerName,
+          tel: obj.customerPhone,
+          email: obj.customerEmail,
+          address: obj.customerAddress,
+          payment: obj.tradeWay,
         },
-      }
-    )
+      },
+    })
     .then(function (response) {
       console.log(response);
       getCartData();
